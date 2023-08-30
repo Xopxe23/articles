@@ -12,6 +12,7 @@ type ArticlesService interface {
 	GetAll() ([]domain.ArticleOutput, error)
 	Create(input domain.ArticleInput, userId int) error
 	GetById(id int) (domain.ArticleOutput, error)
+	Delete(id, userId int) error
 }
 
 func (h *Handler) getAllArticles(c *gin.Context) {
@@ -61,4 +62,18 @@ func (h *Handler) getArticleById(c *gin.Context) {
 
 func (h *Handler) updateArticle(c *gin.Context) {}
 
-func (h *Handler) deleteArticle(c *gin.Context) {}
+func (h *Handler) deleteArticle(c *gin.Context) {
+	userId := c.GetInt(userCtx)
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	if err := h.articlesService.Delete(id, userId); err != nil {
+		newErrorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, map[string]string{
+		"status": "artcile deleted",
+	})
+}

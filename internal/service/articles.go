@@ -8,6 +8,7 @@ type ArticlesRepository interface {
 	GetAll() ([]domain.ArticleOutput, error)
 	Create(input domain.ArticleInput, userId int) error
 	GetById(id int) (domain.ArticleOutput, error)
+	Delete(id, userId int) error
 }
 
 type ArticlesService struct {
@@ -28,4 +29,8 @@ func (s *ArticlesService) Create(input domain.ArticleInput, userId int) error {
 
 func (s *ArticlesService) GetById(id int) (domain.ArticleOutput, error) {
 	return s.articlesRepo.GetById(id)
+}
+
+func (s *ArticlesService) Delete(id, userId int) error {
+	return s.articlesRepo.Delete(id, userId)
 }

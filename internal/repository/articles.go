@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/xopxe23/articles/internal/domain"
 )
@@ -34,4 +36,19 @@ func (r *ArticlesRepository) GetById(id int) (domain.ArticleOutput, error) {
 			  WHERE ar.id = $1`
 	err := r.DB.Get(&article, query, id)
 	return article, err
+}
+
+func (r *ArticlesRepository) Delete(id, userId int) error {
+	result, err := r.DB.Exec("DELETE FROM articles WHERE id = $1 and user_id = $2", id, userId)
+	if err != nil {
+		return err
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return errors.New("can't delete another user article")
+	}
+	return err
 }
