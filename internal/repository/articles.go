@@ -67,7 +67,7 @@ func (r *ArticlesRepository) Update(id, userId int, input domain.ArticleInput) e
 		return err
 	}
 	if rows == 0 {
-		return errors.New("can't update another user article")
+		return errors.New("user don't have article with this id")
 	}
 	return err
 }
@@ -82,7 +82,7 @@ func (r *ArticlesRepository) Delete(id, userId int) error {
 		return err
 	}
 	if rows == 0 {
-		return errors.New("can't delete another user article")
+		return errors.New("user don't have article with this id")
 	}
 	return err
 }

@@ -16,6 +16,16 @@ type ArticlesService interface {
 	Delete(id, userId int) error
 }
 
+// @Summary Get All Articles
+// @Security BearerAuth
+// @Tags Articles
+// @ID get-all-articles
+// @Accept json
+// @Produce json
+// @Success 200 {array} domain.ArticleOutput
+// @Failure 400
+// @Failure 500
+// @Router /articles [get]
 func (h *Handler) getAllArticles(c *gin.Context) {
 	articles, err := h.articlesService.GetAll()
 	if err != nil {
@@ -28,6 +38,17 @@ func (h *Handler) getAllArticles(c *gin.Context) {
 	})
 }
 
+// @Summary Create Article
+// @Security BearerAuth
+// @Tags Articles
+// @ID create-articles
+// @Accept json
+// @Produce json
+// @Param input body domain.ArticleInput true "Article input"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /articles [post]
 func (h *Handler) createArticle(c *gin.Context) {
 	userId := c.GetInt(userCtx)
 	var input domain.ArticleInput
@@ -45,6 +66,17 @@ func (h *Handler) createArticle(c *gin.Context) {
 	})
 }
 
+// @Summary Get Article By Id
+// @Security BearerAuth
+// @Tags Articles
+// @ID get-article-by-id
+// @Accept json
+// @Produce json
+// @Param id path int true "Article ID"
+// @Success 200 {object} domain.ArticleOutput
+// @Failure 400
+// @Failure 500
+// @Router /articles/{id} [get]
 func (h *Handler) getArticleById(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -61,6 +93,18 @@ func (h *Handler) getArticleById(c *gin.Context) {
 	})
 }
 
+// @Summary Update Article
+// @Security BearerAuth
+// @Tags Articles
+// @ID update-article
+// @Accept json
+// @Produce json
+// @Param id path int true "Article ID"
+// @Param input body domain.ArticleInput true "Update Article input"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /articles/{id} [put]
 func (h *Handler) updateArticle(c *gin.Context) {
 	userId := c.GetInt(userCtx)
 	id, err := strconv.Atoi(c.Param("id"))
@@ -82,6 +126,17 @@ func (h *Handler) updateArticle(c *gin.Context) {
 	})
 }
 
+// @Summary Delete Article
+// @Security BearerAuth
+// @Tags Articles
+// @ID delete-article
+// @Accept json
+// @Produce json
+// @Param id path int true "Article ID"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /articles/{id} [delete]
 func (h *Handler) deleteArticle(c *gin.Context) {
 	userId := c.GetInt(userCtx)
 	id, err := strconv.Atoi(c.Param("id"))

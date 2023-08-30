@@ -18,6 +18,16 @@ import (
 	hasher "github.com/xopxe23/articles/pkg/hash"
 )
 
+// @title Articles App API
+// @version 1.0
+// @description API Server for Articles Application
+
+// @host localhost:8000
+// @BasePath /
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 	logrus.SetFormatter(new(logrus.JSONFormatter))
 	cfg, err := config.NewConfig()

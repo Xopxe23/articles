@@ -1,6 +1,11 @@
 package rest
 
-import "github.com/gin-gonic/gin"
+import (
+	_ "github.com/xopxe23/articles/docs"
+	"github.com/gin-gonic/gin"
+	"github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
+)
 
 type Handler struct {
 	authService     AuthService
@@ -13,6 +18,7 @@ func NewHandler(authService AuthService, articlesService ArticlesService) *Handl
 
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
+	router.GET("/swag/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	auth := router.Group("/auth")
 	{
 		auth.POST("/sign-up", h.signUp)

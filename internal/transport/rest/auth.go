@@ -15,6 +15,15 @@ type AuthService interface {
 	ParseToken(token string) (int, error)
 }
 
+// @Summary Sign Up
+// @Tags Users auth
+// @ID sign-up
+// @Accept json
+// @Produce json
+// @Param input body domain.User true "Sign up input"
+// @Success 200
+// @Failure 400
+// @Router /auth/sign-up [post]
 func (h *Handler) signUp(c *gin.Context) {
 	var input domain.User
 	if err := c.BindJSON(&input); err != nil {
@@ -32,6 +41,16 @@ func (h *Handler) signUp(c *gin.Context) {
 	})
 }
 
+// @Summary Sign In
+// @Tags Users auth
+// @ID sign-in
+// @Accept json
+// @Produce json
+// @Param input body domain.SignInInput true "Sign in input"
+// @Success 200 {string} string
+// @Failure 400
+// @Failure 500
+// @Router /auth/sign-in [post]
 func (h *Handler) signIn(c *gin.Context) {
 	var input domain.SignInInput
 	if err := c.BindJSON(&input); err != nil {
@@ -51,6 +70,14 @@ func (h *Handler) signIn(c *gin.Context) {
 	})
 }
 
+// @Summary Refresh
+// @Tags Users auth
+// @ID refresh
+// @Accept json
+// @Produce json
+// @Success 200 {string} string
+// @Failure 500
+// @Router /auth/refresh [get]
 func (h *Handler) refresh(c *gin.Context) {
 	cookie, err := c.Cookie("refresh-token")
 	if err != nil {
