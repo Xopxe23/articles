@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -8,7 +9,8 @@ import (
 )
 
 type AuthService interface {
-	SignUp(domain.User) error
+	SignUp(input domain.User) error
+	SignIn(input domain.SignInInput) (string, string, error)
 }
 
 func (h *Handler) signUp(c *gin.Context) {
@@ -28,6 +30,23 @@ func (h *Handler) signUp(c *gin.Context) {
 	})
 }
 
-func (h *Handler) signIn(c *gin.Context) {}
+func (h *Handler) signIn(c *gin.Context) {
+	var input domain.SignInInput
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	accessToken, refreshToken, err := h.authService.SignIn(input)
+	if err != nil {
+		newErrorResponse(c, http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	c.Header("Set-Cookie", fmt.Sprintf("refresh-token=%s; HttpOnly", refreshToken))
+	c.JSON(http.StatusOK, map[string]string{
+		"token": accessToken,
+	})
+}
 
 func (h *Handler) refresh(c *gin.Context) {}
