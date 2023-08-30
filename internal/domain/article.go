@@ -10,6 +10,11 @@ type Article struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+type ArticleInput struct {
+	Title     *string    `json:"title" binding:"required,gte=10"`
+	Content   *string    `json:"content" binding:"required,gte=20"`
+}
+
 type ArticleOutput struct {
 	Id        int       `db:"id"`
 	Author    string    `db:"author"`

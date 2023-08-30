@@ -20,3 +20,9 @@ func (r *ArticlesRepository) GetAll() ([]domain.ArticleOutput, error) {
 	err := r.DB.Select(&articles, query)
 	return articles, err
 }
+
+func (r *ArticlesRepository) Create(input domain.ArticleInput, userId int) error {
+	query := "INSERT INTO articles (user_id, title, content) VALUES ($1, $2, $3)"
+	_, err := r.DB.Exec(query, userId, input.Title, input.Content)
+	return err
+}

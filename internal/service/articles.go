@@ -6,6 +6,7 @@ import (
 
 type ArticlesRepository interface {
 	GetAll() ([]domain.ArticleOutput, error)
+	Create(input domain.ArticleInput, userId int) error
 }
 
 type ArticlesService struct {
@@ -18,4 +19,8 @@ func NewArticlesService(repo ArticlesRepository) *ArticlesService {
 
 func (s *ArticlesService) GetAll() ([]domain.ArticleOutput, error) {
 	return s.articlesRepo.GetAll()
+}
+
+func (s *ArticlesService) Create(input domain.ArticleInput, userId int) error {
+	return s.articlesRepo.Create(input, userId)
 }

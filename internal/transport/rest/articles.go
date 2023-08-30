@@ -9,6 +9,7 @@ import (
 
 type ArticlesService interface {
 	GetAll() ([]domain.ArticleOutput, error)
+	Create(input domain.ArticleInput, userId int) error
 }
 
 func (h *Handler) getAllArticles(c *gin.Context) {
@@ -23,7 +24,22 @@ func (h *Handler) getAllArticles(c *gin.Context) {
 	})
 }
 
-func (h *Handler) createArticle(c *gin.Context) {}
+func (h *Handler) createArticle(c *gin.Context) {
+	userId := c.GetInt(userCtx)
+	var input domain.ArticleInput
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	if err := h.articlesService.Create(input, userId); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]string{
+		"status": "article created",
+	})
+}
 
 func (h *Handler) getArticleById(c *gin.Context) {}
 
