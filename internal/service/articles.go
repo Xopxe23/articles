@@ -8,6 +8,7 @@ type ArticlesRepository interface {
 	GetAll() ([]domain.ArticleOutput, error)
 	Create(input domain.ArticleInput, userId int) error
 	GetById(id int) (domain.ArticleOutput, error)
+	Update(id, userId int, input domain.ArticleInput) error
 	Delete(id, userId int) error
 }
 
@@ -29,6 +30,10 @@ func (s *ArticlesService) Create(input domain.ArticleInput, userId int) error {
 
 func (s *ArticlesService) GetById(id int) (domain.ArticleOutput, error) {
 	return s.articlesRepo.GetById(id)
+}
+
+func (s *ArticlesService) Update(id, userId int, input domain.ArticleInput) error {
+	return s.articlesRepo.Update(id, userId, input)
 }
 
 func (s *ArticlesService) Delete(id, userId int) error {

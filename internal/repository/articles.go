@@ -2,6 +2,8 @@ package repository
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/xopxe23/articles/internal/domain"
@@ -36,6 +38,38 @@ func (r *ArticlesRepository) GetById(id int) (domain.ArticleOutput, error) {
 			  WHERE ar.id = $1`
 	err := r.DB.Get(&article, query, id)
 	return article, err
+}
+
+func (r *ArticlesRepository) Update(id, userId int, input domain.ArticleInput) error {
+	setValues := make([]string, 0)
+	args := make([]interface{}, 0)
+	argId := 1
+	if input.Title != nil {
+		setValues = append(setValues, fmt.Sprintf("title=$%d", argId))
+		args = append(args, *input.Title)
+		argId++
+	}
+	if input.Content != nil {
+		setValues = append(setValues, fmt.Sprintf("content=$%d", argId))
+		args = append(args, *input.Content)
+		argId++
+	}
+	setQuery := strings.Join(setValues, ", ")
+	query := fmt.Sprintf("UPDATE articles SET %s WHERE id = $%d and user_id = $%d", setQuery, argId, argId+1)
+	args = append(args, id)
+	args = append(args, userId)
+	result, err := r.DB.Exec(query, args...)
+	if err != nil {
+		return err
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return errors.New("can't update another user article")
+	}
+	return err
 }
 
 func (r *ArticlesRepository) Delete(id, userId int) error {

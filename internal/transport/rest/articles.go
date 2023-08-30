@@ -12,6 +12,7 @@ type ArticlesService interface {
 	GetAll() ([]domain.ArticleOutput, error)
 	Create(input domain.ArticleInput, userId int) error
 	GetById(id int) (domain.ArticleOutput, error)
+	Update(id, userId int, input domain.ArticleInput) error
 	Delete(id, userId int) error
 }
 
@@ -60,7 +61,26 @@ func (h *Handler) getArticleById(c *gin.Context) {
 	})
 }
 
-func (h *Handler) updateArticle(c *gin.Context) {}
+func (h *Handler) updateArticle(c *gin.Context) {
+	userId := c.GetInt(userCtx)
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	var input domain.ArticleInput
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	if err := h.articlesService.Update(id, userId, input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, map[string]string{
+		"status": "article updated",
+	})
+}
 
 func (h *Handler) deleteArticle(c *gin.Context) {
 	userId := c.GetInt(userCtx)
