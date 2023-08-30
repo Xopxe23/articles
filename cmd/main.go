@@ -40,7 +40,11 @@ func main() {
 
 	authRepo := repository.NewAuthRepository(db)
 	authService := service.NewAuthService(authRepo, hasher, []byte("secret"))
-	handler := rest.NewHandler(authService)
+
+	articlesRepo := repository.NewArticlesRepository(db)
+	articlesService := service.NewArticlesService(articlesRepo)
+
+	handler := rest.NewHandler(authService, articlesService)
 
 	srv := new(domain.Server)
 	go func() {

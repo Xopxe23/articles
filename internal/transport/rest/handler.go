@@ -3,11 +3,12 @@ package rest
 import "github.com/gin-gonic/gin"
 
 type Handler struct {
-	authService AuthService
+	authService     AuthService
+	articlesService ArticlesService
 }
 
-func NewHandler(authService AuthService) *Handler {
-	return &Handler{authService: authService}
+func NewHandler(authService AuthService, articlesService ArticlesService) *Handler {
+	return &Handler{authService: authService, articlesService: articlesService}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
