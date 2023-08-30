@@ -2,6 +2,7 @@ package rest
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/xopxe23/articles/internal/domain"
@@ -10,6 +11,7 @@ import (
 type ArticlesService interface {
 	GetAll() ([]domain.ArticleOutput, error)
 	Create(input domain.ArticleInput, userId int) error
+	GetById(id int) (domain.ArticleOutput, error)
 }
 
 func (h *Handler) getAllArticles(c *gin.Context) {
@@ -41,7 +43,21 @@ func (h *Handler) createArticle(c *gin.Context) {
 	})
 }
 
-func (h *Handler) getArticleById(c *gin.Context) {}
+func (h *Handler) getArticleById(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	article, err := h.articlesService.GetById(id)
+	if err != nil {
+		newErrorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"article": article,
+	})
+}
 
 func (h *Handler) updateArticle(c *gin.Context) {}
 

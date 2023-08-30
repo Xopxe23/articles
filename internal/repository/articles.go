@@ -26,3 +26,12 @@ func (r *ArticlesRepository) Create(input domain.ArticleInput, userId int) error
 	_, err := r.DB.Exec(query, userId, input.Title, input.Content)
 	return err
 }
+
+func (r *ArticlesRepository) GetById(id int) (domain.ArticleOutput, error) {
+	var article domain.ArticleOutput
+	query := `SELECT ar.id, CONCAT(us.name, ' ', us.surname) as author, ar.title, ar.content, ar.created_at
+			  FROM articles ar INNER JOIN users us ON ar.user_id = us.id
+			  WHERE ar.id = $1`
+	err := r.DB.Get(&article, query, id)
+	return article, err
+}
