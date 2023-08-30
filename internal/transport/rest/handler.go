@@ -19,6 +19,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		auth.GET("/refresh", h.refresh)
 	}
 	articles := router.Group("/articles")
+	articles.Use(h.userIdentity)
 	{
 		articles.GET("", h.getAllArticles)
 		articles.POST("", h.createArticle)

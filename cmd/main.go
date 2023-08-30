@@ -39,7 +39,7 @@ func main() {
 	hasher := hasher.NewSHA1Hasher("salt")
 
 	authRepo := repository.NewAuthRepository(db)
-	authService := service.NewAuthService(authRepo, hasher)
+	authService := service.NewAuthService(authRepo, hasher, []byte("secret"))
 	handler := rest.NewHandler(authService)
 
 	srv := new(domain.Server)

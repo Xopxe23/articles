@@ -11,6 +11,8 @@ import (
 type AuthService interface {
 	SignUp(input domain.User) error
 	SignIn(input domain.SignInInput) (string, string, error)
+	RefreshTokens(token string) (string, string, error)
+	ParseToken(token string) (int, error)
 }
 
 func (h *Handler) signUp(c *gin.Context) {
@@ -49,4 +51,20 @@ func (h *Handler) signIn(c *gin.Context) {
 	})
 }
 
-func (h *Handler) refresh(c *gin.Context) {}
+func (h *Handler) refresh(c *gin.Context) {
+	cookie, err := c.Cookie("refresh-token")
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	accessToken, refreshToken, err := h.authService.RefreshTokens(cookie)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.Header("Set-Cookie", fmt.Sprintf("refresh-token=%s; HttpOnly", refreshToken))
+	c.JSON(http.StatusOK, map[string]string{
+		"token": accessToken,
+	})
+}

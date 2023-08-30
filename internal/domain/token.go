@@ -3,8 +3,8 @@ package domain
 import "time"
 
 type RefreshSession struct {
-	Id        int
-	UserId    int
-	Token     string
-	ExpiresAt time.Time
+	Id        int       `db:"id"`
+	UserId    int       `db:"user_id"`
+	Token     string    `db:"token"`
+	ExpiresAt time.Time `db:"expires_at"`
 }
