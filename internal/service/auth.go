@@ -9,6 +9,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/xopxe23/articles/internal/domain"
+	"github.com/xopxe23/articles/internal/transport/rabbitmq"
 )
 
 type PasswordHasher interface {
@@ -26,10 +27,11 @@ type AuthService struct {
 	authRepos  AuthRepository
 	hasher     PasswordHasher
 	hmacSecret []byte
+	rmqClient  rabbitmq.Client
 }
 
-func NewAuthService(repos AuthRepository, hasher PasswordHasher, secret []byte) *AuthService {
-	return &AuthService{authRepos: repos, hasher: hasher, hmacSecret: secret}
+func NewAuthService(repos AuthRepository, hasher PasswordHasher, secret []byte, rmq rabbitmq.Client) *AuthService {
+	return &AuthService{authRepos: repos, hasher: hasher, hmacSecret: secret, rmqClient: rmq}
 }
 
 func (s *AuthService) SignUp(input domain.User) error {

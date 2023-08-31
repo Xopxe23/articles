@@ -13,6 +13,7 @@ import (
 	"github.com/xopxe23/articles/internal/domain"
 	"github.com/xopxe23/articles/internal/repository"
 	"github.com/xopxe23/articles/internal/service"
+	"github.com/xopxe23/articles/internal/transport/rabbitmq"
 	"github.com/xopxe23/articles/internal/transport/rest"
 	"github.com/xopxe23/articles/pkg/database"
 	hasher "github.com/xopxe23/articles/pkg/hash"
@@ -46,13 +47,15 @@ func main() {
 		logrus.Fatalf("db connection error: %s", err)
 	}
 
+	rmqClient := rabbitmq.NewClient()
+
 	hasher := hasher.NewSHA1Hasher("salt")
 
 	authRepo := repository.NewAuthRepository(db)
-	authService := service.NewAuthService(authRepo, hasher, []byte("secret"))
+	authService := service.NewAuthService(authRepo, hasher, []byte("secret"), rmqClient)
 
 	articlesRepo := repository.NewArticlesRepository(db)
-	articlesService := service.NewArticlesService(articlesRepo)
+	articlesService := service.NewArticlesService(articlesRepo, rmqClient)
 
 	handler := rest.NewHandler(authService, articlesService)
 
@@ -73,6 +76,10 @@ func main() {
 
 	if err := srv.Shutdown(context.Background()); err != nil {
 		logrus.Errorf("error occured on server shutting down: %s", err.Error())
+	}
+
+	if err := rmqClient.CloseConnection(); err != nil {
+		logrus.Errorf("error occured on rabbitMQ connection close: %s", err.Error())
 	}
 
 	if err := db.Close(); err != nil {

@@ -25,10 +25,12 @@ func (r *ArticlesRepository) GetAll() ([]domain.ArticleOutput, error) {
 	return articles, err
 }
 
-func (r *ArticlesRepository) Create(input domain.ArticleInput, userId int) error {
-	query := "INSERT INTO articles (user_id, title, content) VALUES ($1, $2, $3)"
-	_, err := r.DB.Exec(query, userId, input.Title, input.Content)
-	return err
+func (r *ArticlesRepository) Create(input domain.ArticleInput, userId int) (int,error) {
+	query := "INSERT INTO articles (user_id, title, content) VALUES ($1, $2, $3) RETURNING id"
+	row := r.DB.QueryRow(query, userId, input.Title, input.Content)
+	var id int
+	err := row.Scan(&id)
+	return id, err
 }
 
 func (r *ArticlesRepository) GetById(id int) (domain.ArticleOutput, error) {
