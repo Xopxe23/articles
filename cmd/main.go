@@ -49,10 +49,10 @@ func main() {
 
 	rmqClient := rabbitmq.NewClient()
 
-	hasher := hasher.NewSHA1Hasher("salt")
+	newHash := hasher.NewSHA1Hasher("salt")
 
 	authRepo := repository.NewAuthRepository(db)
-	authService := service.NewAuthService(authRepo, hasher, []byte("secret"), rmqClient)
+	authService := service.NewAuthService(authRepo, newHash, []byte("secret"), rmqClient)
 
 	articlesRepo := repository.NewArticlesRepository(db)
 	articlesService := service.NewArticlesService(articlesRepo, rmqClient)
